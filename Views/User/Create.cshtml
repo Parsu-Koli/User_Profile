@@ -1,97 +1,136 @@
 ﻿@model UploadForm_Project.Models.UserProfile
 
 @{
-    ViewData["Title"] = "Register User";
+    ViewData["Title"] = "Register Employee";
 }
 
 <div class="container py-4">
 
     <div class="row justify-content-center">
 
-        <div class="col-lg-7 col-md-9 col-sm-12">
+        <div class="col-xl-7 col-lg-8 col-md-10">
 
             <div class="card shadow border-0">
 
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white"
+                     style="background:linear-gradient(90deg,#6f42c1,#d63384);">
 
-                    <h3 class="mb-0">
-                        <i class="bi bi-person-plus-fill me-2"></i>
-                        User Registration
-                    </h3>
+                    <div class="d-flex align-items-center">
+
+                        <i class="bi bi-person-workspace fs-2 me-3"></i>
+
+                        <div>
+
+                            <h3 class="mb-0">
+                                Employee Registration
+                            </h3>
+
+                            <small class="opacity-75">
+                                Upload employee work proof or profile image
+                            </small>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-4">
 
                     <form asp-action="Create"
                           method="post"
-                          enctype="multipart/form-data">
+                          enctype="multipart/form-data"
+                          id="employeeForm">
 
                         <div asp-validation-summary="ModelOnly"
-                             class="alert alert-danger">
-                        </div>
+                             class="alert alert-danger"></div>
 
-                        <!-- Full Name -->
+                        <div class="row">
 
-                        <div class="mb-4">
+                            <!-- Employee Name -->
 
-                            <label asp-for="FullName"
-                                   class="form-label fw-semibold">
-                            </label>
+                            <div class="col-md-12 mb-4">
 
-                            <div class="input-group">
+                                <label asp-for="FullName"
+                                       class="form-label fw-semibold">
 
-                                <span class="input-group-text">
-                                    <i class="bi bi-person-fill"></i>
-                                </span>
+                                    Employee Name
 
-                                <input asp-for="FullName"
+                                </label>
+
+                                <div class="input-group">
+
+                                    <span class="input-group-text">
+
+                                        <i class="bi bi-person-fill"></i>
+
+                                    </span>
+
+                                    <input asp-for="FullName"
+                                           class="form-control"
+                                           placeholder="Enter Employee Name" />
+
+                                </div>
+
+                                <span asp-validation-for="FullName"
+                                      class="text-danger"></span>
+
+                            </div>
+
+                            <!-- Image Preview -->
+
+                            <div class="col-md-12 text-center mb-4">
+
+                                <img id="previewImage"
+                                     src="https://via.placeholder.com/130?text=Photo"
+                                     class="rounded-circle border shadow"
+                                     width="130"
+                                     height="130"
+                                     style="object-fit:cover;" />
+
+                            </div>
+
+                            <!-- Upload -->
+
+                            <div class="col-md-12 mb-4">
+
+                                <label asp-for="UploadFile"
+                                       class="form-label fw-semibold">
+
+                                    Upload Image / ZIP File
+
+                                </label>
+
+                                <input asp-for="UploadFile"
                                        class="form-control"
-                                       placeholder="Enter Full Name" />
+                                       type="file"
+                                       id="fileInput" />
+
+                                <div class="form-text">
+
+                                    Allowed:
+                                    JPG, JPEG, PNG, ZIP
+
+                                    <br />
+
+                                    Maximum Size:
+                                    <strong>5 MB</strong>
+
+                                </div>
+
+                                <span asp-validation-for="UploadFile"
+                                      class="text-danger"></span>
 
                             </div>
 
-                            <span asp-validation-for="FullName"
-                                  class="text-danger">
-                            </span>
-
                         </div>
 
-                        <!-- Upload -->
+                        <hr />
 
-                        <div class="mb-4">
-
-                            <label asp-for="UploadFile"
-                                   class="form-label fw-semibold">
-
-                                Upload Image / ZIP
-
-                            </label>
-
-                            <input asp-for="UploadFile"
-                                   type="file"
-                                   class="form-control"
-                                   accept=".jpg,.jpeg,.png,.zip" />
-
-                            <div class="form-text">
-
-                                Supported files:
-                                JPG, JPEG, PNG, ZIP (Maximum 5 MB)
-
-                            </div>
-
-                            <span asp-validation-for="UploadFile"
-                                  class="text-danger">
-                            </span>
-
-                        </div>
-
-                        <!-- Buttons -->
-
-                        <div class="d-flex gap-2 justify-content-end">
+                        <div class="d-flex justify-content-between flex-wrap">
 
                             <a asp-action="Index"
-                               class="btn btn-outline-secondary">
+                               class="btn btn-outline-secondary rounded-pill px-4">
 
                                 <i class="bi bi-arrow-left"></i>
 
@@ -99,12 +138,20 @@
 
                             </a>
 
-                            <button type="submit"
-                                    class="btn btn-primary">
+                            <button id="saveBtn"
+                                    type="submit"
+                                    class="btn btn-primary rounded-pill px-4">
 
-                                <i class="bi bi-save-fill"></i>
+                                <span id="btnText">
 
-                                Save User
+                                    <i class="bi bi-save-fill"></i>
+
+                                    Save Employee
+
+                                </span>
+
+                                <span id="spinner"
+                                      class="spinner-border spinner-border-sm d-none"></span>
 
                             </button>
 
@@ -125,4 +172,34 @@
 @section Scripts
 {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const input = document.getElementById("fileInput");
+        const preview = document.getElementById("previewImage");
+
+        input.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (!file) return;
+
+            if (file.type.startsWith("image")) {
+
+                preview.src = URL.createObjectURL(file);
+
+            }
+
+        });
+
+        document.getElementById("employeeForm")
+            .addEventListener("submit", function () {
+
+                document.getElementById("btnText").classList.add("d-none");
+
+                document.getElementById("spinner").classList.remove("d-none");
+
+            });
+
+    </script>
 }
