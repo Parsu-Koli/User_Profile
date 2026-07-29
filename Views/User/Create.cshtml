@@ -1,0 +1,47 @@
+﻿@model UploadForm_Project.Models.UserProfile
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label>Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Mobile</label>
+        <input asp-for="MobileNumber" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>DOB</label>
+        <input asp-for="DOB" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Address</label>
+        <textarea asp-for="Address" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label>Upload File</label>
+        <input asp-for="UploadFile"
+               type="file"
+               class="form-control"
+               accept=".jpg,.jpeg,.png,.zip" />
+        <span asp-validation-for="UploadFile" class="text-danger"></span>
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+
+</form>
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
