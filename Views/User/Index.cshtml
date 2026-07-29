@@ -1,54 +1,166 @@
 ﻿@model IEnumerable<UploadForm_Project.Models.UserProfile>
 
-<table class="table table-bordered">
+@{
+    ViewData["Title"] = "Employee Works";
+}
 
-    <thead>
-        <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Download</th>
-        </tr>
-    </thead>
+<div class="card shadow border-0">
 
-    <tbody>
+    <div class="card-header text-white"
+         style="background:linear-gradient(90deg,#6f42c1,#d63384);">
 
-        @foreach (var item in Model)
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+            <div>
+
+                <h4 class="mb-0">
+                    <i class="bi bi-people-fill me-2"></i>
+                    Employee Works
+                </h4>
+
+                <small class="opacity-75">
+                    Total Employees : @Model.Count()
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        @if (!Model.Any())
         {
-            <tr>
+            <div class="alert alert-warning text-center mb-0">
 
-                <td>
+                <i class="bi bi-exclamation-circle-fill me-2"></i>
 
-                    @if (item.ContentType != null &&
-                                    item.ContentType.StartsWith("image"))
-                    {
-                        <img src="@Url.Action("Image", "User", new { id = item.Id })"
-                             width="100"
-                             height="100" />
-                    }
+                No employee records found.
 
-                </td>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
 
-                <td>@item.FullName</td>
+                <table class="table table-hover align-middle">
 
-                <td>@item.Email</td>
+                    <thead class="table-light">
 
-                <td>
+                        <tr>
 
-                    @if (item.FileData != null)
-                    {
-                        <a asp-action="Download"
-                           asp-route-id="@item.Id"
-                           class="btn btn-success">
-                            Download
-                        </a>
-                    }
+                            <th>#</th>
 
-                </td>
+                            <th class="text-center">Photo</th>
 
-            </tr>
+                            <th>Employee Name</th>
+
+                            <th>File Type</th>
+
+                            <th class="text-center">Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int sr = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+
+                            <tr>
+
+                                <td>@sr</td>
+
+                                <td class="text-center">
+
+                                    @if (item.ContentType != null &&
+                                                                item.ContentType.StartsWith("image"))
+                                    {
+                                        <img src="@Url.Action("Image", "User", new { id = item.Id })"
+                                             class="border shadow"
+                                             width="65"
+                                             height="65"
+                                             style="object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-secondary text-white d-inline-flex justify-content-center align-items-center"
+                                             style="width:65px;height:65px;">
+
+                                            <i class="bi bi-person-fill fs-3"></i>
+
+                                        </div>
+                                    }
+
+                                </td>
+
+                                <td>
+
+                                    <strong>@item.FullName</strong>
+
+                                </td>
+
+                                <td>
+
+                                    @if (!string.IsNullOrEmpty(item.FileName))
+                                    {
+                                        var ext = System.IO.Path.GetExtension(item.FileName).ToLower();
+
+                                        if (ext == ".png")
+                                        {
+                                            <span class="badge bg-success">PNG</span>
+                                        }
+                                        else if (ext == ".jpg" || ext == ".jpeg")
+                                        {
+                                            <span class="badge bg-info">JPG</span>
+                                        }
+                                        else if (ext == ".zip")
+                                        {
+                                            <span class="badge bg-warning text-dark">ZIP</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">@ext</span>
+                                        }
+                                    }
+
+                                </td>
+
+                                <td class="text-center">
+
+                                    @if (item.FileData != null)
+                                    {
+                                        <a asp-action="Download"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-success btn-sm rounded-pill">
+
+                                            <i class="bi bi-download me-1"></i>
+
+                                            Download
+
+                                        </a>
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                            sr++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
         }
 
-    </tbody>
+    </div>
 
-</table>
+</div>

@@ -59,7 +59,6 @@ namespace UploadForm_Project.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            model.DOB = DateTime.SpecifyKind(model.DOB, DateTimeKind.Utc);
 
             _context.UserProfiles.Add(model);
             await _context.SaveChangesAsync();

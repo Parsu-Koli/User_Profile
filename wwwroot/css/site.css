@@ -1,22 +1,91 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: "Segoe UI",sans-serif;
+    background: #f8f9fd;
+}
+
+/* ===========================
+   Purple + Pink Navbar
+=========================== */
+
+.custom-navbar {
+    background: linear-gradient( 135deg, #5b2be0 0%, #7b2ff7 45%, #d63384 100%);
+}
+
+/* Logo */
+
+.brand-logo {
+    width: 48px;
+    height: 48px;
+    background: white;
+    color: #7b2ff7;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+
+/* Navigation */
+
+.nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: .3s;
+}
+
+    .nav-link:hover {
+        color: #ffd166 !important;
+    }
+
+/* Cards */
+
+.card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+}
+
+/* Buttons */
+
+.btn {
+    border-radius: 30px;
+}
+
+/* Footer */
+
+.custom-footer {
+    background: linear-gradient( 90deg, #5b2be0, #d63384);
+}
+
+/* Images */
+
+.rounded-circle {
+    object-fit: cover;
+}
+
+/* Tables */
+
+.table td,
+.table th {
+    vertical-align: middle;
+}
+
+/* Mobile */
+
+@media(max-width:768px) {
+
+    .navbar-brand .fs-5 {
+        font-size: 1rem !important;
+    }
+
+    .navbar-brand small {
+        font-size: .70rem;
+    }
 }
