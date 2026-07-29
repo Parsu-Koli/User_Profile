@@ -5,16 +5,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 WORKDIR /src
 
-# Copy project file
 COPY *.csproj ./
 
-# Restore dependencies
 RUN dotnet restore
 
-# Copy remaining source code
 COPY . .
 
-# Publish the application
 RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
 
 # =========================
@@ -26,9 +22,11 @@ WORKDIR /app
 
 COPY --from=build /app/publish .
 
-# Render provides the PORT environment variable
-ENV ASPNETCORE_URLS=http://+:10000
+# Disable file watching
+ENV DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE=false
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 
-EXPOSE 10000
+# Render uses PORT
+ENV ASPNETCORE_URLS=http://+:${PORT}
 
 ENTRYPOINT ["dotnet", "UploadForm_Project.dll"]
