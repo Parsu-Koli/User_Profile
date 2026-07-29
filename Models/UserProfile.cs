@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UploadForm_Project.Models
@@ -18,6 +17,9 @@ namespace UploadForm_Project.Models
         public string? ContentType { get; set; }
 
         public byte[]? FileData { get; set; }
+
+        // Store UTC
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
         [NotMapped]
         public IFormFile? UploadFile { get; set; }

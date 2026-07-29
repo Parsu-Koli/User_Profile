@@ -14,10 +14,29 @@ namespace UploadForm_Project.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? date)
         {
-            return View(await _context.UserProfiles.ToListAsync());
+            var indiaTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata");
+
+            // Default to today's date in India
+            var selectedDate = date ??
+                TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, indiaTimeZone).Date;
+
+            var users = await _context.UserProfiles.ToListAsync();
+
+            var filteredUsers = users
+                .Where(x =>
+                    TimeZoneInfo.ConvertTimeFromUtc(
+                        DateTime.SpecifyKind(x.CreatedDate, DateTimeKind.Utc),
+                        indiaTimeZone).Date == selectedDate.Date)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToList();
+
+            ViewBag.SelectedDate = selectedDate;
+
+            return View(filteredUsers);
         }
+
 
         public IActionResult Create()
         {
@@ -59,6 +78,7 @@ namespace UploadForm_Project.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            model.CreatedDate = DateTime.UtcNow;
 
             _context.UserProfiles.Add(model);
             await _context.SaveChangesAsync();

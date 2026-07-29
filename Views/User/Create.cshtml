@@ -26,7 +26,7 @@
                             </h3>
 
                             <small class="opacity-75">
-                                Upload employee work proof or profile image
+                                Upload employee work proof
                             </small>
 
                         </div>
@@ -45,81 +45,173 @@
                         <div asp-validation-summary="ModelOnly"
                              class="alert alert-danger"></div>
 
-                        <div class="row">
+                        <!-- Employee Name -->
 
-                            <!-- Employee Name -->
+                        <div class="mb-4">
 
-                            <div class="col-md-12 mb-4">
+                            <label asp-for="FullName"
+                                   class="form-label fw-semibold">
 
-                                <label asp-for="FullName"
-                                       class="form-label fw-semibold">
+                                Employee Name
 
-                                    Employee Name
+                            </label>
 
-                                </label>
+                            <div class="input-group">
 
-                                <div class="input-group">
+                                <span class="input-group-text">
 
-                                    <span class="input-group-text">
+                                    <i class="bi bi-person-fill"></i>
 
-                                        <i class="bi bi-person-fill"></i>
+                                </span>
 
-                                    </span>
-
-                                    <input asp-for="FullName"
-                                           class="form-control"
-                                           placeholder="Enter Employee Name" />
-
-                                </div>
-
-                                <span asp-validation-for="FullName"
-                                      class="text-danger"></span>
+                                <input asp-for="FullName"
+                                       class="form-control"
+                                       placeholder="Enter Employee Name" />
 
                             </div>
 
-                            <!-- Image Preview -->
+                            <span asp-validation-for="FullName"
+                                  class="text-danger"></span>
 
-                            <div class="col-md-12 text-center mb-4">
+                        </div>
+
+                        <!-- Preview -->
+
+                        <div class="text-center mb-4">
+
+                            <div class="position-relative d-inline-block">
 
                                 <img id="previewImage"
-                                     src="https://via.placeholder.com/130?text=Photo"
+                                     src="https://via.placeholder.com/160?text=Employee"
                                      class="rounded-circle border shadow"
-                                     width="130"
-                                     height="130"
+                                     width="160"
+                                     height="160"
                                      style="object-fit:cover;" />
+
+                                <button type="button"
+                                        class="btn btn-primary rounded-circle position-absolute bottom-0 end-0 shadow"
+                                        id="cameraBtn"
+                                        style="width:45px;height:45px;">
+
+                                    <i class="bi bi-camera-fill"></i>
+
+                                </button>
 
                             </div>
 
-                            <!-- Upload -->
+                        </div>
 
-                            <div class="col-md-12 mb-4">
+                        <!-- Upload -->
 
-                                <label asp-for="UploadFile"
-                                       class="form-label fw-semibold">
+                        <div class="mb-4">
 
-                                    Upload Image / ZIP File
+                            <label class="form-label fw-semibold">
+                                Upload Work
+                            </label>
 
-                                </label>
+                            <input asp-for="UploadFile"
+                                   id="fileInput"
+                                   type="file"
+                                   class="d-none" />
 
-                                <input asp-for="UploadFile"
-                                       class="form-control"
-                                       type="file"
-                                       id="fileInput" />
+                            <div class="row g-2">
 
-                                <div class="form-text">
-
-                                    Allowed:
-                                    JPG, JPEG, PNG, ZIP
-
-                                    <br />
-
-                                    Maximum Size:
-                                    <strong>5 MB</strong>
-
+                                <div class="col-md-4">
+                                    <button type="button"
+                                            id="takePhoto"
+                                            class="btn btn-primary w-100">
+                                        <i class="bi bi-camera-fill me-2"></i>
+                                        Camera
+                                    </button>
                                 </div>
 
-                                <span asp-validation-for="UploadFile"
-                                      class="text-danger"></span>
+                                <div class="col-md-4">
+                                    <button type="button"
+                                            id="galleryBtn"
+                                            class="btn btn-success w-100">
+                                        <i class="bi bi-images me-2"></i>
+                                        Gallery
+                                    </button>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <button type="button"
+                                            id="zipBtn"
+                                            class="btn btn-warning w-100">
+                                        <i class="bi bi-file-earmark-zip me-2"></i>
+                                        ZIP File
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-2">
+                                <span id="selectedFile" class="text-muted">
+                                    No file selected
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="modal fade"
+                             id="cameraModal"
+                             tabindex="-1">
+
+                            <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                                <div class="modal-content">
+
+                                    <div class="modal-header">
+
+                                        <h5 class="modal-title">
+
+                                            <i class="bi bi-camera-fill me-2"></i>
+
+                                            Capture Employee Photo
+
+                                        </h5>
+
+                                        <button class="btn-close"
+                                                data-bs-dismiss="modal">
+                                        </button>
+
+                                    </div>
+
+                                    <div class="modal-body text-center">
+
+                                        <video id="video"
+                                               autoplay
+                                               playsinline
+                                               class="img-fluid rounded shadow">
+                                        </video>
+
+                                        <canvas id="canvas"
+                                                class="d-none">
+                                        </canvas>
+
+                                    </div>
+
+                                    <div class="modal-footer">
+
+                                        <button class="btn btn-secondary"
+                                                data-bs-dismiss="modal">
+
+                                            Cancel
+
+                                        </button>
+
+                                        <button id="captureBtn"
+                                                class="btn btn-primary">
+
+                                            <i class="bi bi-camera-fill me-2"></i>
+
+                                            Capture
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
 
                             </div>
 
@@ -127,7 +219,7 @@
 
                         <hr />
 
-                        <div class="d-flex justify-content-between flex-wrap">
+                        <div class="d-flex justify-content-between">
 
                             <a asp-action="Index"
                                class="btn btn-outline-secondary rounded-pill px-4">
@@ -138,8 +230,8 @@
 
                             </a>
 
-                            <button id="saveBtn"
-                                    type="submit"
+                            <button type="submit"
+                                    id="saveBtn"
                                     class="btn btn-primary rounded-pill px-4">
 
                                 <span id="btnText">
@@ -169,37 +261,166 @@
 
 </div>
 
-@section Scripts
-{
+@section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
 
     <script>
-
-        const input = document.getElementById("fileInput");
         const preview = document.getElementById("previewImage");
+        const fileInput = document.getElementById("fileInput");
+        const fileName = document.getElementById("selectedFile");
 
-        input.addEventListener("change", function () {
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+
+        let stream = null;
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("cameraModal")
+        );
+
+        document.getElementById("takePhoto").onclick = async function () {
+
+            try {
+
+                stream = await navigator.mediaDevices.getUserMedia({
+
+                    video: {
+
+                        facingMode: "environment"
+
+                    }
+
+                });
+
+                video.srcObject = stream;
+
+                modal.show();
+
+            }
+
+            catch {
+
+                alert("Camera permission denied or camera not available.");
+
+            }
+
+        };
+
+        document.getElementById("galleryBtn").onclick = function () {
+
+            fileInput.accept = "image/*";
+
+            fileInput.removeAttribute("capture");
+
+            fileInput.click();
+
+        };
+
+        document.getElementById("zipBtn").onclick = function () {
+
+            fileInput.accept = ".zip";
+
+            fileInput.click();
+
+        };
+
+        fileInput.onchange = function () {
 
             const file = this.files[0];
 
-            if (!file) return;
+            if (!file)
+                return;
+
+            fileName.innerHTML = "<strong>" + file.name + "</strong>";
 
             if (file.type.startsWith("image")) {
 
                 preview.src = URL.createObjectURL(file);
 
             }
+            else {
+
+                preview.src =
+                    "https://cdn-icons-png.flaticon.com/512/4726/4726010.png";
+
+            }
+
+        };
+
+        document.getElementById("captureBtn").onclick = async function () {
+
+            canvas.width = video.videoWidth;
+
+            canvas.height = video.videoHeight;
+
+            canvas.getContext("2d").drawImage(
+
+                video,
+
+                0,
+
+                0,
+
+                canvas.width,
+
+                canvas.height
+
+            );
+
+            canvas.toBlob(function (blob) {
+
+                const file = new File(
+
+                    [blob],
+
+                    "Employee_" + Date.now() + ".jpg",
+
+                    {
+
+                        type: "image/jpeg"
+
+                    }
+
+                );
+
+                const dt = new DataTransfer();
+
+                dt.items.add(file);
+
+                fileInput.files = dt.files;
+
+                preview.src = URL.createObjectURL(file);
+
+                fileName.innerHTML = "<strong>" + file.name + "</strong>";
+
+                modal.hide();
+
+                stream.getTracks().forEach(track => track.stop());
+
+            }, "image/jpeg", 0.95);
+
+        };
+
+        document.getElementById("cameraModal")
+        .addEventListener("hidden.bs.modal", function () {
+
+            if (stream) {
+
+                stream.getTracks().forEach(track => track.stop());
+
+            }
 
         });
 
         document.getElementById("employeeForm")
-            .addEventListener("submit", function () {
+        .addEventListener("submit", function () {
 
-                document.getElementById("btnText").classList.add("d-none");
+            document.getElementById("btnText").classList.add("d-none");
 
-                document.getElementById("spinner").classList.remove("d-none");
+            document.getElementById("spinner").classList.remove("d-none");
 
-            });
-
+        });
     </script>
+
 }

@@ -6,62 +6,118 @@
 
 <div class="card shadow border-0">
 
+    <!-- ================= HEADER ================= -->
     <div class="card-header text-white"
          style="background:linear-gradient(90deg,#6f42c1,#d63384);">
 
         <div class="d-flex justify-content-between align-items-center flex-wrap">
 
             <div>
-
                 <h4 class="mb-0">
                     <i class="bi bi-people-fill me-2"></i>
                     Employee Works
                 </h4>
-
                 <small class="opacity-75">
                     Total Employees : @Model.Count()
                 </small>
-
             </div>
 
-        </div>
+            <a asp-action="Create" class="btn btn-light rounded-pill">
+                <i class="bi bi-person-plus-fill me-1"></i>
+                Add Employee
+            </a>
 
+        </div>
     </div>
 
     <div class="card-body">
 
+        <!-- ================= TOOLBAR: SEARCH + EXPORT ================= -->
+        <div class="row mb-4 g-2 align-items-center">
+
+            <div class="col-lg-8 col-md-8 col-sm-12">
+                <div class="input-group shadow-sm">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search text-primary"></i>
+                    </span>
+                    <input type="text"
+                           id="searchEmployee"
+                           class="form-control border-start-0"
+                           placeholder="Search employee by name..." />
+                    <button class="btn btn-primary" id="btnSearch" type="button">
+                        <i class="bi bi-search me-1"></i>Search
+                    </button>
+                    <button class="btn btn-outline-secondary" id="btnReset" type="button">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i>Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-4 col-sm-12 text-md-end">
+                <div class="btn-group">
+                    <button class="btn btn-outline-success" id="btnExcel" type="button">
+                        <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                    </button>
+                    <button class="btn btn-outline-danger" id="btnPDF" type="button">
+                        <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
         @if (!Model.Any())
         {
             <div class="alert alert-warning text-center mb-0">
-
                 <i class="bi bi-exclamation-circle-fill me-2"></i>
-
                 No employee records found.
-
             </div>
         }
         else
         {
+            <!-- ================= WEEK NAVIGATION ================= -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                        <button class="btn btn-outline-primary" id="prevWeek">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+
+                        <div class="text-center">
+                            <h5 class="mb-0 fw-bold" id="weekTitle"></h5>
+                            <small class="text-muted">Current Work Week</small>
+                        </div>
+
+                        <button class="btn btn-outline-primary" id="nextWeek">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+
+                    </div>
+
+                    <hr />
+
+                    <div id="weekDays" class="d-flex justify-content-between flex-wrap text-center"></div>
+
+                </div>
+                <input type="hidden" id="selectedDate" value="" />
+            </div>
+
+            <!-- ================= EMPLOYEE TABLE ================= -->
             <div class="table-responsive">
 
-                <table class="table table-hover align-middle">
+                <table class="table table-hover align-middle" id="employeeTable">
 
                     <thead class="table-light">
-
                         <tr>
-
                             <th>#</th>
-
                             <th class="text-center">Photo</th>
-
                             <th>Employee Name</th>
-
+                            <th>Created On</th>
                             <th>File Type</th>
-
                             <th class="text-center">Action</th>
-
                         </tr>
-
                     </thead>
 
                     <tbody>
@@ -72,81 +128,81 @@
 
                         @foreach (var item in Model)
                         {
+                            var indiaTime = TimeZoneInfo.ConvertTimeFromUtc(
+                            DateTime.SpecifyKind(item.CreatedDate, DateTimeKind.Utc),
+                            TimeZoneInfo.FindSystemTimeZoneById("Asia/Kolkata"));
 
-                            <tr>
+                            <tr class="employeeRow" data-date="@indiaTime.ToString("yyyy-MM-dd")">
 
                                 <td>@sr</td>
 
                                 <td class="text-center">
-
-                                    @if (item.ContentType != null &&
-                                                                item.ContentType.StartsWith("image"))
+                                    @if (item.ContentType != null && item.ContentType.StartsWith("image"))
                                     {
                                         <img src="@Url.Action("Image", "User", new { id = item.Id })"
-                                             class="border shadow"
-                                             width="65"
-                                             height="65"
+                                             class="rounded-circle border shadow-sm"
+                                             width="55"
+                                             height="55"
                                              style="object-fit:cover;" />
                                     }
                                     else
                                     {
-                                        <div class="bg-secondary text-white d-inline-flex justify-content-center align-items-center"
-                                             style="width:65px;height:65px;">
-
-                                            <i class="bi bi-person-fill fs-3"></i>
-
+                                        <div class="bg-secondary text-white rounded-circle d-inline-flex justify-content-center align-items-center"
+                                             style="width:55px;height:55px;">
+                                            <i class="bi bi-person-fill fs-4"></i>
                                         </div>
                                     }
-
                                 </td>
 
                                 <td>
-
                                     <strong>@item.FullName</strong>
-
                                 </td>
 
+                                <td>@indiaTime.ToString("dd MMM yyyy hh:mm tt")</td>
+
                                 <td>
-
-                                    @if (!string.IsNullOrEmpty(item.FileName))
-                                    {
-                                        var ext = System.IO.Path.GetExtension(item.FileName).ToLower();
-
-                                        if (ext == ".png")
-                                        {
-                                            <span class="badge bg-success">PNG</span>
-                                        }
-                                        else if (ext == ".jpg" || ext == ".jpeg")
-                                        {
-                                            <span class="badge bg-info">JPG</span>
-                                        }
-                                        else if (ext == ".zip")
-                                        {
-                                            <span class="badge bg-warning text-dark">ZIP</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-secondary">@ext</span>
-                                        }
+                                    @{
+                                        var ext = !string.IsNullOrEmpty(item.FileName)
+                                        ? System.IO.Path.GetExtension(item.FileName).ToLower()
+                                        : "";
                                     }
 
+                                    @if (ext == ".png")
+                                    {
+                                        <span class="badge bg-success">PNG</span>
+                                    }
+                                    else if (ext == ".jpg" || ext == ".jpeg")
+                                    {
+                                        <span class="badge bg-info text-dark">JPG</span>
+                                    }
+                                    else if (ext == ".zip")
+                                    {
+                                        <span class="badge bg-warning text-dark">ZIP</span>
+                                    }
+                                    else if (!string.IsNullOrEmpty(ext))
+                                    {
+                                        <span class="badge bg-secondary">@ext</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
                                 </td>
 
                                 <td class="text-center">
-
                                     @if (item.FileData != null)
                                     {
                                         <a asp-action="Download"
                                            asp-route-id="@item.Id"
                                            class="btn btn-success btn-sm rounded-pill">
-
                                             <i class="bi bi-download me-1"></i>
-
                                             Download
-
                                         </a>
                                     }
-
+                                    else
+                                    {
+                                        <span class="text-muted">—</span>
+                                    }
                                 </td>
 
                             </tr>
@@ -158,9 +214,203 @@
 
                 </table>
 
+                <div id="noResults" class="alert alert-info text-center d-none">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No employees found for the selected day.
+                </div>
+
             </div>
         }
 
     </div>
 
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+@section Scripts {
+
+    <script>
+        (function () {
+
+            //////////////////////////////////////////////////////
+            // WEEK NAVIGATION
+            //////////////////////////////////////////////////////
+
+            let current = new Date();
+            let selectedDate = null; // yyyy-MM-dd string, null = no day filter
+
+            function pad(n) { return n < 10 ? "0" + n : n; }
+
+            function toIsoDate(d) {
+                return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+            }
+
+            function loadWeek(date) {
+
+                const weekTitleEl = document.getElementById("weekTitle");
+                const weekDaysEl = document.getElementById("weekDays");
+                if (!weekTitleEl || !weekDaysEl) return;
+
+                let first = new Date(date);
+                first.setDate(date.getDate() - date.getDay());
+
+                let last = new Date(first);
+                last.setDate(first.getDate() + 6);
+
+                weekTitleEl.innerHTML =
+                    first.toLocaleDateString() + " - " + last.toLocaleDateString();
+
+                let html = "";
+
+                for (let i = 0; i < 7; i++) {
+
+                    let d = new Date(first);
+                    d.setDate(first.getDate() + i);
+                    const iso = toIsoDate(d);
+
+                    let active = (iso === selectedDate) ? "btn-primary text-white" : "btn-light";
+
+                    html += `
+                    <button type="button" class="btn ${active} m-1 day-btn" data-date="${iso}">
+                        <div>${d.toLocaleDateString('en-US', { weekday: 'short' })}</div>
+                        <strong>${d.getDate()}</strong>
+                    </button>`;
+                }
+
+                weekDaysEl.innerHTML = html;
+            }
+
+            loadWeek(current);
+
+            document.addEventListener("click", function (e) {
+
+                const dayBtn = e.target.closest(".day-btn");
+                if (!dayBtn) return;
+
+                const iso = dayBtn.dataset.date;
+
+                // toggle: clicking the same day again clears the filter
+                selectedDate = (selectedDate === iso) ? null : iso;
+
+                const hidden = document.getElementById("selectedDate");
+                if (hidden) hidden.value = selectedDate || "";
+
+                loadWeek(current);
+                filterTable();
+            });
+
+            const prevBtn = document.getElementById("prevWeek");
+            if (prevBtn) {
+                prevBtn.onclick = function () {
+                    current.setDate(current.getDate() - 7);
+                    loadWeek(current);
+                };
+            }
+
+            const nextBtn = document.getElementById("nextWeek");
+            if (nextBtn) {
+                nextBtn.onclick = function () {
+                    current.setDate(current.getDate() + 7);
+                    loadWeek(current);
+                };
+            }
+
+            //////////////////////////////////////////////////////
+            // SEARCH + DAY FILTER (combined)
+            //////////////////////////////////////////////////////
+
+            const txtSearch = document.getElementById("searchEmployee");
+
+            function filterTable() {
+
+                const keyword = (txtSearch ? txtSearch.value : "").toLowerCase().trim();
+                const rows = document.querySelectorAll(".employeeRow");
+                let visibleCount = 0;
+
+                rows.forEach(function (row) {
+
+                    const name = row.cells[2].innerText.toLowerCase();
+                    const rowDate = row.dataset.date;
+
+                    const matchesName = name.includes(keyword);
+                    const matchesDate = !selectedDate || rowDate === selectedDate;
+
+                    const show = matchesName && matchesDate;
+                    row.style.display = show ? "" : "none";
+
+                    if (show) visibleCount++;
+                });
+
+                const noResults = document.getElementById("noResults");
+                if (noResults) {
+                    noResults.classList.toggle("d-none", visibleCount !== 0);
+                }
+            }
+
+            if (txtSearch) {
+                txtSearch.addEventListener("keyup", filterTable);
+            }
+
+            const btnSearch = document.getElementById("btnSearch");
+            if (btnSearch) btnSearch.addEventListener("click", filterTable);
+
+            const btnReset = document.getElementById("btnReset");
+            if (btnReset) {
+                btnReset.addEventListener("click", function () {
+                    if (txtSearch) txtSearch.value = "";
+                    selectedDate = null;
+                    const hidden = document.getElementById("selectedDate");
+                    if (hidden) hidden.value = "";
+                    loadWeek(current);
+                    filterTable();
+                });
+            }
+
+            //////////////////////////////////////////////////////
+            // EXPORT EXCEL
+            //////////////////////////////////////////////////////
+
+            const btnExcel = document.getElementById("btnExcel");
+            if (btnExcel) {
+                btnExcel.addEventListener("click", function () {
+
+                    const table = document.getElementById("employeeTable");
+                    if (!table) return;
+
+                    const workbook = XLSX.utils.table_to_book(table, { sheet: "Employees" });
+                    XLSX.writeFile(workbook, "EmployeeWorks.xlsx");
+                });
+            }
+
+            //////////////////////////////////////////////////////
+            // EXPORT PDF
+            //////////////////////////////////////////////////////
+
+            const btnPDF = document.getElementById("btnPDF");
+            if (btnPDF) {
+                btnPDF.addEventListener("click", function () {
+
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF("landscape");
+
+                    doc.setFontSize(18);
+                    doc.text("Employee Works Report", 14, 18);
+
+                    doc.autoTable({
+                        html: "#employeeTable",
+                        startY: 30,
+                        styles: { fontSize: 9 },
+                        headStyles: { fillColor: [111, 66, 193] }
+                    });
+
+                    doc.save("EmployeeWorks.pdf");
+                });
+            }
+
+        })();
+    </script>
+
+}
