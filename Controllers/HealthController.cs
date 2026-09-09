@@ -2,12 +2,11 @@
 
 namespace UploadForm_Project.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
+    
     public class HealthController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+       
+        public IActionResult Health()
         {
             return Ok(new
             {
