@@ -11,7 +11,7 @@ RUN dotnet restore
 
 COPY . .
 
-RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "UploadForm_Project.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # =========================
 # Runtime Stage
